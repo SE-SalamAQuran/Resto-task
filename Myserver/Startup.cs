@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace Myserver
 {
@@ -19,6 +19,8 @@ namespace Myserver
     public class Startup
     {
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,7 +33,9 @@ namespace Myserver
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen();
+
+
+        services.AddSwaggerGen();
             services.AddSignalR()
                 .AddJsonProtocol(options => {
                     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
@@ -54,8 +58,9 @@ namespace Myserver
                                                           "http://localhost:3000").AllowAnyHeader().AllowAnyMethod(); 
                                   });
             });//If we need React 3000 is the default port
+         
 
-        }
+    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
