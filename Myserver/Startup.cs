@@ -9,8 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+
 using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.EntityFrameworkCore;
 
 namespace Myserver
 {
@@ -33,15 +34,27 @@ namespace Myserver
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<ConversationsDBContext>(options =>
+            
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
+            );
+            services.AddDbContext<UsersDBContext>(options =>
+
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
+            );
+            services.AddDbContext<MessagesDBContext>(options =>
+
+                 options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
+             );
 
 
-        services.AddSwaggerGen();
+            services.AddSwaggerGen();
             services.AddSignalR()
                 .AddJsonProtocol(options => {
                     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
             
                 });
-          
+           
 
             services.AddSignalR(hubOptions =>
             {
