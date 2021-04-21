@@ -10,5 +10,6 @@ namespace Myserver.Models
         public int id { get; set; }
         public User f_user { get; set; }
         public User s_user { get; set; }
+        public List<Message> messages { get; set; }
     }
 }

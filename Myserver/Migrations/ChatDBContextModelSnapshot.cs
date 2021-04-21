@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Myserver;
 
-namespace Myserver.Migrations.SqlServerMigration.Messages
+namespace Myserver.Migrations
 {
-    [DbContext(typeof(MessagesDBContext))]
-    [Migration("20210415210129_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(ChatDBContext))]
+    partial class ChatDBContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +19,7 @@ namespace Myserver.Migrations.SqlServerMigration.Messages
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Myserver.Models.Conversation", b =>
+            modelBuilder.Entity("Myserver.Conversation", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -40,66 +38,70 @@ namespace Myserver.Migrations.SqlServerMigration.Messages
 
                     b.HasIndex("s_userid");
 
-                    b.ToTable("Conversation");
+                    b.ToTable("Conversations");
                 });
 
-            modelBuilder.Entity("Myserver.Models.Message", b =>
+            modelBuilder.Entity("Myserver.Message", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("convid")
+                    b.Property<int?>("conversationid")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("date")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("msg_content")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("msg_date")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("msg_status")
                         .HasColumnType("int");
 
-                    b.Property<int>("receiverID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("senderID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("time")
+                    b.Property<DateTime>("msg_time")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("receiverid")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("senderid")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.HasIndex("convid");
+                    b.HasIndex("conversationid");
+
+                    b.HasIndex("receiverid");
+
+                    b.HasIndex("senderid");
 
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Myserver.Models.User", b =>
+            modelBuilder.Entity("Myserver.User", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("usrName")
+                    b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Myserver.Models.Conversation", b =>
+            modelBuilder.Entity("Myserver.Conversation", b =>
                 {
-                    b.HasOne("Myserver.Models.User", "f_user")
+                    b.HasOne("Myserver.User", "f_user")
                         .WithMany()
                         .HasForeignKey("f_userid");
 
-                    b.HasOne("Myserver.Models.User", "s_user")
+                    b.HasOne("Myserver.User", "s_user")
                         .WithMany()
                         .HasForeignKey("s_userid");
 
@@ -108,13 +110,30 @@ namespace Myserver.Migrations.SqlServerMigration.Messages
                     b.Navigation("s_user");
                 });
 
-            modelBuilder.Entity("Myserver.Models.Message", b =>
+            modelBuilder.Entity("Myserver.Message", b =>
                 {
-                    b.HasOne("Myserver.Models.Conversation", "conv")
-                        .WithMany()
-                        .HasForeignKey("convid");
+                    b.HasOne("Myserver.Conversation", "conversation")
+                        .WithMany("messages")
+                        .HasForeignKey("conversationid");
 
-                    b.Navigation("conv");
+                    b.HasOne("Myserver.User", "receiver")
+                        .WithMany()
+                        .HasForeignKey("receiverid");
+
+                    b.HasOne("Myserver.User", "sender")
+                        .WithMany()
+                        .HasForeignKey("senderid");
+
+                    b.Navigation("conversation");
+
+                    b.Navigation("receiver");
+
+                    b.Navigation("sender");
+                });
+
+            modelBuilder.Entity("Myserver.Conversation", b =>
+                {
+                    b.Navigation("messages");
                 });
 #pragma warning restore 612, 618
         }

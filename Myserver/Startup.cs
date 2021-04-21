@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Myserver.Hubs;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +26,6 @@ namespace Myserver
         {
             Configuration = configuration;
         }
-      
 
         public IConfiguration Configuration { get; }
 
@@ -34,15 +33,8 @@ namespace Myserver
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<ConversationsDBContext>(options =>
             
-                options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
-            );
-            services.AddDbContext<UsersDBContext>(options =>
-
-                options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
-            );
-            services.AddDbContext<MessagesDBContext>(options =>
+            services.AddDbContext<ChatDBContext>(options =>
 
                  options.UseSqlServer(Configuration.GetConnectionString("SqlConnectionString"))
              );
@@ -54,7 +46,8 @@ namespace Myserver
                     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
             
                 });
-           
+            services.AddSignalR();
+            //Adding SignalR hub configuration
 
             services.AddSignalR(hubOptions =>
             {
